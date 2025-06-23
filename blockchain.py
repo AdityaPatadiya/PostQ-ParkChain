@@ -15,7 +15,7 @@ class Blockchain(object):
         self.cryptography = Cryptography()
 
         # Create the genesis block
-        self.new_block(previous_hash=1, proof=100)
+        self.new_block(previous_hash='0000000000000000000000000000000000000000000000000000000000000000', proof=self.proof_of_work(0))
 
     def new_block(self, proof, previous_hash=None):
         """
@@ -30,6 +30,7 @@ class Blockchain(object):
             'transactions': self.current_transaction,
             'proof': proof,
             'previous_hash': previous_hash or self.hash(self.chain[-1]),
+            'validator': ""
         }
 
         # Reset the current list of transactions
@@ -49,14 +50,22 @@ class Blockchain(object):
             'sender': sender,
             'recipient': recipient,
             'amount': amount,
+            "vehical_id": "",
+            "duration": "",
+            "location": "",
+            "timestamp": "",
+            "signature": "",
+            "public_key": "",
         }
+
         signature = self.cryptography.sign_transaction(transaction)
         public_key = self.cryptography.public
+        raw_public_key = ''.join(public_key.splitlines()[1:-1])
 
         signed_transaction = {
             **transaction,
             "signature": signature,
-            "public key": public_key
+            "public key": raw_public_key
         }
 
         if not self.cryptography.verify_transaction(transaction, signature):
