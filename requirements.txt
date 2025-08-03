@@ -1,0 +1,5 @@
+ecdsa
+base58
+flask
+requests
+flask-cors
