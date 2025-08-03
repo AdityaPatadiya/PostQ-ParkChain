@@ -5,12 +5,12 @@ import { getFirestore } from 'firebase/firestore';
 import { getFunctions } from "firebase/functions";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB7AObMfj08lW4eSWFTg4KmGwpaMSpKw1E",
-  authDomain: "smart-parking-b521d.firebaseapp.com",
-  projectId: "smart-parking-b521d",
-  storageBucket: "smart-parking-b521d.firebasestorage.app",
-  messagingSenderId: "676712357356",
-  appId: "1:676712357356:web:f1dfad6311c416f85c74c9",
+  apiKey: "add_yours",
+  authDomain: "add_yours",
+  projectId: "add_yours",
+  storageBucket: "add_yours",
+  messagingSenderId: "add_yours",
+  appId: "add_yours",
 };
 
 const app = initializeApp(firebaseConfig);
