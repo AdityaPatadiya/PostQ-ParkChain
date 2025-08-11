@@ -1,0 +1,54 @@
+.custom-navbar {
+  background: linear-gradient(90deg, #0f2027, #203a43, #2c5364);
+  transition: all 0.3s ease-in-out;
+  border-radius: 0 0 12px 12px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.brand-text {
+  font-weight: bold;
+  font-size: 1.8rem;
+  animation: slideInLeft 1s ease-in-out;
+}
+
+.nav-anim {
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.nav-anim::after {
+  content: '';
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #ffffff;
+  transition: width 0.3s ease;
+}
+
+.nav-anim:hover::after {
+  width: 100%;
+}
+
+.logout-btn {
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #ffffff;
+  color: #2c5364;
+  border-color: #ffffff;
+}
+
+/* Animations */
+@keyframes slideInLeft {
+  0% {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0px);
+    opacity: 1;
+  }
+}
