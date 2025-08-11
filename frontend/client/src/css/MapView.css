@@ -1,0 +1,43 @@
+.map-page {
+  display: flex;
+  height: 80vh;
+  gap: 10px;
+}
+
+.map-section {
+ /* flex: 7; /* 70% */
+  border-radius: 10px;
+  overflow: hidden;
+  width: 70%;
+}
+
+.details-section {
+ /* flex: 3; /* 30% */
+  background: #f9fafb;
+  padding: 16px;
+  border-radius: 10px;
+  overflow-y: auto;
+  width:30%;    
+}
+
+.details-section h2 {
+  margin-bottom: 5px;
+  color: #1a73e8;
+}
+
+.slots-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.slots-table th {
+  background: #1a73e8;
+  color: white;
+  padding: 6px;
+}
+
+.slots-table td {
+  border-bottom: 1px solid #ddd;
+  padding: 6px;
+}

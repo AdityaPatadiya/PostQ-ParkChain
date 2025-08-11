@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { collection, addDoc, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import emailjs from "@emailjs/browser";
-
+import "../css/BookingForm.css"; // Custom CSS
 
 const BookingForm = ({ plot, onClose }) => {
   const [form, setForm] = useState({
@@ -26,7 +26,7 @@ const BookingForm = ({ plot, onClose }) => {
           const data = docSnap.data();
           setUserData({
             email: user.email,
-            name: data.name || "", // Assumes 'name' field exists
+            name: data.name || "",
           });
         }
       }
@@ -82,18 +82,22 @@ const BookingForm = ({ plot, onClose }) => {
       createdAt: new Date(),
     });
 
-    // 🔔 Send email using EmailJS
     try {
-      await emailjs.send("service_lzcft4a", "template_6b0423i", {
-        name: userData.name,
-        email: userData.email,
-        slot: slotType,
-        reservedFor,
-        date,
-        time,
-        duration,
-        plotName: plot.plotName,
-      }, "FeYm9Nn9Men4Ayj-C");
+      await emailjs.send(
+        "service_lzcft4a",
+        "template_6b0423i",
+        {
+          name: userData.name,
+          email: userData.email,
+          slot: slotType,
+          reservedFor,
+          date,
+          time,
+          duration,
+          plotName: plot.plotName,
+        },
+        "FeYm9Nn9Men4Ayj-C"
+      );
       alert("Booking successful and confirmation email sent!");
     } catch (err) {
       console.error("EmailJS Error:", err);
@@ -104,37 +108,41 @@ const BookingForm = ({ plot, onClose }) => {
   };
 
   return (
-    <div style={{ position: "absolute", top: 50, right: 30, background: "white", padding: 20, zIndex: 999 }}>
-      <h4>Book at {plot.plotName}</h4>
-      <p><strong>Email:</strong> {userData.email || "Not found"}</p>
-      <form ref={formRef} onSubmit={handleSubmit}>
-        <label>Slot Type</label>
-        <select name="slotType" onChange={handleChange} value={form.slotType}>
-          <option value="compact">Compact</option>
-          <option value="small">Small</option>
-          <option value="large">Large</option>
-        </select>
+    <div className="booking-overlay">
+      <div className="booking-modal">
+        <h4 className="modal-title">Book at {plot.plotName}</h4>
+        <p className="modal-sub"><strong>Email:</strong> {userData.email || "Not found"}</p>
+        <form ref={formRef} onSubmit={handleSubmit} className="booking-form">
+          <label>Slot Type</label>
+          <select name="slotType" onChange={handleChange} value={form.slotType}>
+            <option value="compact">Compact</option>
+            <option value="small">Small</option>
+            <option value="large">Large</option>
+          </select>
 
-        <label>Reserved For</label>
-        <select name="reservedFor" onChange={handleChange} value={form.reservedFor}>
-          <option value="general">General</option>
-          <option value="ev">EV</option>
-          <option value="vip">VIP</option>
-          <option value="handicap">Handicap</option>
-        </select>
+          <label>Reserved For</label>
+          <select name="reservedFor" onChange={handleChange} value={form.reservedFor}>
+            <option value="general">General</option>
+            <option value="ev">EV</option>
+            <option value="vip">VIP</option>
+            <option value="handicap">Handicap</option>
+          </select>
 
-        <label>Date</label>
-        <input type="date" name="date" onChange={handleChange} required />
+          <label>Date</label>
+          <input type="date" name="date" onChange={handleChange} required />
 
-        <label>Time</label>
-        <input type="time" name="time" onChange={handleChange} required />
+          <label>Time</label>
+          <input type="time" name="time" onChange={handleChange} required />
 
-        <label>Duration (hr)</label>
-        <input type="number" name="duration" min="1" onChange={handleChange} required />
+          <label>Duration (hr)</label>
+          <input type="number" name="duration" min="1" onChange={handleChange} required />
 
-        <button type="submit" className="btn btn-success mt-2">Book</button>
-        <button type="button" className="btn btn-secondary mt-2 ms-2" onClick={onClose}>Cancel</button>
-      </form>
+          <div className="modal-actions">
+            <button type="submit" className="btn btn-success">Book</button>
+            <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

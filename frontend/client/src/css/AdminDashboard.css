@@ -1,0 +1,107 @@
+/* ======= General Page Styles ======= */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #e9f0ff, #ffffff);
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 25px;
+}
+
+h2 {
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+/* ======= Dashboard Split Layout ======= */
+.dashboard-wrapper {
+  display: flex;
+  height: 80vh;
+  gap: 20px;
+}
+
+.map-section,
+.form-section {
+  flex: 1;
+}
+
+.map-section {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0px 8px 20px rgba(0,0,0,0.1);
+}
+
+/* ======= Form Card ======= */
+.form-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0px 8px 20px rgba(0,0,0,0.05);
+  overflow-y: auto;
+}
+
+.form-section label {
+  font-weight: 500;
+  color: #34495e;
+}
+
+.form-control {
+  border-radius: 8px;
+  border: 1px solid #d0d6e4;
+  transition: all 0.2s ease-in-out;
+  font-size: 14px;
+}
+
+.form-control:focus {
+  border-color: #3498db;
+  box-shadow: 0px 0px 6px rgba(52, 152, 219, 0.4);
+  outline: none;
+}
+
+/* ======= Slot Inputs ======= */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.col-4 {
+  flex: 1 1 calc(50% - 15px);
+  min-width: 180px;
+}
+
+/* ======= Buttons ======= */
+.btn-success {
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #219150, #27ae60);
+  transform: translateY(-1px);
+  box-shadow: 0px 5px 12px rgba(0,0,0,0.15);
+}
+
+/* ======= Mobile View ======= */
+@media (max-width: 768px) {
+  .dashboard-wrapper {
+    flex-direction: column;
+  }
+  .map-section,
+  .form-section {
+    flex: none;
+    height: 50vh;
+  }
+}

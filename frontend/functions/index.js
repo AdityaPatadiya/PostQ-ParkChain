@@ -2,7 +2,7 @@ const functions = require("firebase-functions");
 const axios = require("axios");
 
 // ✅ Replace with your actual Fast2SMS API key
-const FAST2SMS_API_KEY = "AbfKxsrev1hUX58GYdmuo7J9DOnyBtiqVlpwcgMLNQHPj6aE4Z43r6H8DVKRqOyfJWYjh7nLPalobFcg";
+const FAST2SMS_API_KEY = "";
 
 exports.sendBookingSMS = functions.https.onCall(async (data, context) => {
   const { phoneNumber, message } = data;
