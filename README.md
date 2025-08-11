@@ -6,7 +6,7 @@ A blockchain-based parking solution combining queue management, decentralized tr
 
 ---
 
-## Feature
+## Features
 - Decentralized Booking System using blockchain for audit and/or user records. [Look Here](https://github.com/AdityaPatadiya/PostQ-ParkChain/tree/main/backend/blockchain)
 - Post-Quantum Cryptography (PQC) for robust encryption of sensitive user data. [Look Here](https://github.com/AdityaPatadiya/PostQ-ParkChain/tree/main/backend/EchelonCrypt)
 - Smart Contract Payments to securely handle parking fee transactions. [Look Here](https://github.com/AdityaPatadiya/PostQ-ParkChain/tree/main/Smart_Contract)
