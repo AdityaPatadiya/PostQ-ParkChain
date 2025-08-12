@@ -4,12 +4,33 @@ import json
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from backend.EchelonCrypt.Encryption.key_generation.key_file_generation import Key_Generation
+from EchelonCrypt.Encryption.key_generation.key_file_generation import Key_Generation
 
 class Cryptography():
     def __init__(self):
-        self.generate_key = Key_Generation()
-        self.private, self.public, self.address = self.generate_wallet()
+        self.key_dir = os.path.join(os.path.dirname(__file__), "keys")
+        os.makedirs(self.key_dir, exist_ok=True)
+
+        private_path = os.path.join(self.key_dir, "private.pem")
+        public_path = os.path.join(self.key_dir, "public.pem")
+
+        if os.path.exists(private_path) and os.path.exists(public_path):
+            with open(private_path, "r") as f:
+                self.private = f.read()
+            with open(public_path, "r") as f:
+                self.public = f.read()
+            self.address = self.generate_address_from_public(self.public)
+        else:
+            self.private, self.public, self.address = self.generate_wallet()
+            with open(private_path, "w") as f:
+                f.write(self.private)
+            with open(public_path, "w") as f:
+                f.write(self.public)
+
+    def generate_address_from_public(self, public_pem):
+        vk = VerifyingKey.from_pem(public_pem.encode())
+        public_key_bytes = vk.to_string()
+        return base58.b58encode(public_key_bytes).decode()
 
     def generate_wallet(self):
         private_key = SigningKey.generate(curve=SECP256k1)
@@ -33,16 +54,16 @@ class Cryptography():
         print(public_key_bytes)
         address = base58.b58encode(public_key_bytes).decode()
 
-        return private_key, public_key, address
+        return private_pem, public_pem, address
 
     def sign_transaction(self, transaction):
-        sk = SigningKey.from_pem(self.private)
+        sk = SigningKey.from_pem(self.private.encode())
         message = json.dumps(transaction, sort_keys=True).encode()
         signature = sk.sign(message)
         return signature.hex()
 
     def verify_transaction(self, transaction, signature_hex):
-        vk = VerifyingKey.from_pem(self.public)
+        vk = VerifyingKey.from_pem(self.public.encode())
         message = json.dumps(transaction, sort_keys=True).encode()
         try:
             return vk.verify(bytes.fromhex(signature_hex), message)

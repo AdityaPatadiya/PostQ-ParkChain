@@ -30,7 +30,7 @@ class Blockchain(object):
             'transactions': self.current_transaction,
             'proof': proof,
             'previous_hash': previous_hash or self.hash(self.chain[-1]),
-            'validator': ""
+            # 'validator': ""
         }
 
         # Reset the current list of transactions
@@ -50,12 +50,12 @@ class Blockchain(object):
             'sender': sender,
             'recipient': recipient,
             'amount': amount,
-            "vehical_id": "",
-            "duration": "",
-            "location": "",
-            "timestamp": "",
-            "signature": "",
-            "public_key": "",
+            # "vehical_id": "",
+            # "duration": "",
+            # "location": "",
+            # "timestamp": "",
+            # "signature": "",
+            # "public_key": "",
         }
 
         signature = self.cryptography.sign_transaction(transaction)
