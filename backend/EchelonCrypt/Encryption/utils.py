@@ -16,13 +16,29 @@ operation_map = {
 def modular_exponentiation(matrix, mod=256):
     """Apply modular exponentiation to each element in the matrix."""
     def get_random_exponent(mod=256):
-        """Generate a secure random exponent ensuring it's invertible."""
         while True:
-            e = secrets.randbelow(mod - 1) + 1  # Random number between 1 and 255
-            if gcd(e, mod - 1) == 1:  # Ensure modular inverse exists
+            e = secrets.randbelow(mod - 1) + 1  # 1..255
+            # we only require gcd(e, 128) == 1 for invertibility on odd residues mod 256
+            if gcd(e, 128) == 1:
                 return e
+
     exponent = get_random_exponent(mod)
-    return np.mod(np.power(matrix, exponent), mod), exponent
+
+    # Compute Y = X^e (mod 256)
+    Y = np.mod(np.power(matrix, exponent, dtype=np.uint64), mod)
+
+    # Record even inputs (those that collapse to 0 for even exponent).
+    # With our get_random_exponent using gcd(e,128)==1, e can be odd too,
+    # but this metadata is harmless and guarantees perfect invertibility.
+    even_mask = (matrix % 2 == 0)
+    even_values = np.where(even_mask, matrix, -1).astype(int)  # -1 means "not even here"
+
+    # Return both Y and metadata dict
+    metadata = {
+        "e": int(exponent),
+        "even_values": even_values.tolist()  # same shape; -1 where not even
+    }
+    return Y, metadata
 
 
 def lwe_noise(matrix, noise_scale=5):
@@ -93,8 +109,9 @@ def apply_random_operations(matrix):
             operation_sequence.append((op_code, noise))
         
         elif operation == modular_exponentiation:
-            matrix, exponent = operation(matrix)
-            operation_sequence.append((op_code, exponent))
+            matrix, meta = operation(matrix)
+            # meta looks like {"e": exponent, "even_values": [[...], ...]}
+            operation_sequence.append((op_code, meta))
 
         else:
             matrix = operation(matrix)

@@ -1,5 +1,5 @@
-from verifying_signature import SignatureVerifier
-from aes_decryption import kyber_decrypt
+from Decryption.verifying_signature import SignatureVerifier
+from Decryption.aes_decryption import kyber_decrypt
 
 class Decryption:
     def __init__(self):
