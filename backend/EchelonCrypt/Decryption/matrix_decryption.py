@@ -213,12 +213,12 @@ def decrypt_combined_matrix(message_id, combined_matrix, metadata_file):
     return original_text
 
 
-combined_matrix =   [
-    ['114,101', '113,114', '68,107'],
-    ['35,28', '81,200', '101,14'],
-    ['113,23', '108,156', '115,215']
-]
+combined_matrix =  [
+    ['76,249', '107,0', '110,55'],
+    ['95,0', '33,81', '76,0'],
+    ['107,119', '116,99', '112,147']
+ ]
 
-message_id = "55cfdf4a10132d17257ed97fe29003b84172ae33b6a1faa13e261f84772aa894"
+message_id = "01b6a3cd9694132a0564b811ec2a4e03ea5836e3de6aaa611ee895818160a9b3"
 original_text = decrypt_combined_matrix(message_id, combined_matrix, "Data_utils.json")
 print("Decrypted text:", original_text)

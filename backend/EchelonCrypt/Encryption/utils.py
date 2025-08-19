@@ -25,7 +25,7 @@ def modular_exponentiation(matrix, mod=256):
     exponent = get_random_exponent(mod)
 
     # Compute Y = X^e (mod 256)
-    Y = np.mod(np.power(matrix, exponent, dtype=np.uint64), mod)
+    Y = np.mod(np.power(matrix, exponent), mod)
 
     # Record even inputs (those that collapse to 0 for even exponent).
     # With our get_random_exponent using gcd(e,128)==1, e can be odd too,
