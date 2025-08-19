@@ -14,7 +14,7 @@
 				"anonymous": false,
 				"inputs": [
 					{
-						"indexed": false,
+						"indexed": true,
 						"internalType": "address",
 						"name": "from",
 						"type": "address"
@@ -28,6 +28,49 @@
 				],
 				"name": "PaymentReceived",
 				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "overtimeMinutes",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "penaltyAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "PenaltyCalculated",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "allowedMinutes",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "baseFee",
+						"type": "uint256"
+					}
+				],
+				"name": "endParkingAndPay",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
 			},
 			{
 				"inputs": [],
@@ -44,13 +87,6 @@
 			},
 			{
 				"inputs": [],
-				"name": "makePayment",
-				"outputs": [],
-				"stateMutability": "payable",
-				"type": "function"
-			},
-			{
-				"inputs": [],
 				"name": "owner",
 				"outputs": [
 					{
@@ -60,6 +96,63 @@
 					}
 				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "penaltyPerMinute",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "sessions",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "startTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isActive",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "newPenalty",
+						"type": "uint256"
+					}
+				],
+				"name": "setPenaltyPerMinute",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "startParking",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -83,7 +176,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"Smart_Contract/Payment.sol": "PaymentContract"
+			"backend/Smart_Contract/contracts/Payment.sol": "PaymentContract"
 		},
 		"evmVersion": "prague",
 		"libraries": {},
@@ -97,12 +190,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"Smart_Contract/Payment.sol": {
-			"keccak256": "0xe4d137f2c49b8be4648d229c9d50fc81c46f98073559cefeadbd43bf180ade97",
+		"backend/Smart_Contract/contracts/Payment.sol": {
+			"keccak256": "0x6041424f9c348d0f5403353bd5aaa59578105e1963a902375c7c0bfcea635f12",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://2533240a3874d4a1f51c68c03a15cc4ad06a0cdcac920a4d256bc65a687590ba",
-				"dweb:/ipfs/Qmdnzr9onehBkL58kv8HwnxnXUrvJ9Sqx3WNQ412kh6xD2"
+				"bzz-raw://05286855bd3b95562ea4df63d156cede0b2981a5a0240c2d224c8655c74a56ec",
+				"dweb:/ipfs/QmeCmM8aAShZaZo4cZJujaa4J2cuycKHVtVByPd3h7aTSg"
 			]
 		}
 	},
