@@ -11,6 +11,10 @@ import AdminDashboard from './pages/AdminDashboard';
 import LandingPage from './pages/LandingPage';
 import UserHome from './pages/UserHome';
 import UserManagement from './pages/UserManagement';
+import AdminScanner from "./pages/AdminScanner";
+import ExitScanner from './pages/ExitScanner';
+import PaymentDashboard from './pages/PaymentDashboard';
+import Checkout from './pages/Checkout';
  // Assuming you have a Home component
 
 function App() {
@@ -26,6 +30,10 @@ function App() {
         <Route path="/user-dashboard" element={<UserDashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/user-management" element={<UserManagement />} />
+        <Route path="/admin-scanner" element={<AdminScanner />} />
+        <Route path="/exit-scanner" element={<ExitScanner />} />
+        <Route path="/payment-dashboard" element={<PaymentDashboard />} />
+        <Route path="/checkout" element={<Checkout />} />
         {/* Add more routes as needed */}
       </Routes>
     </Router>

@@ -1,78 +1,84 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-contract PaymentContract {
+contract ParkingContract {
     address public owner;
-    uint256 public penaltyPerMinute = 0.001 ether; // Penalty per overtime minute
+    uint256 public penaltyPerMinute = 0.001 ether;
 
     struct ParkingSession {
         uint256 startTime;
+        uint256 allowedMinutes;
         bool isActive;
+        bool isEnded;
     }
 
     mapping(address => ParkingSession) public sessions;
 
-    event PaymentReceived(address indexed from, uint256 amount);
-    event PenaltyCalculated(address indexed user, uint256 overtimeMinutes, uint256 penaltyAmount);
+    event ParkingStarted(address indexed user, uint256 allowedMinutes, uint256 startTime, uint256 baseFee);
+    event ParkingEnded(address indexed user, uint256 parkedMinutes, uint256 penalty);
 
     constructor() {
         owner = msg.sender;
     }
 
-    // Start parking session
-    function startParking() external {
-        require(!sessions[msg.sender].isActive, "Parking session already active");
-        sessions[msg.sender] = ParkingSession(block.timestamp, true);
+    // Start parking with upfront base fee
+    function startParking(uint256 allowedMinutes) external payable {
+        require(!sessions[msg.sender].isActive, "Active session exists");
+        require(msg.value > 0, "Base fee required");
+
+        sessions[msg.sender] = ParkingSession({
+            startTime: block.timestamp,
+            allowedMinutes: allowedMinutes,
+            isActive: true,
+            isEnded: false
+        });
+
+        emit ParkingStarted(msg.sender, allowedMinutes, block.timestamp, msg.value);
     }
 
-    // End parking session and pay dynamically
-    function endParkingAndPay(uint256 allowedMinutes, uint256 baseFee) external payable {
+    // End parking and pay penalty if needed
+    function endParking() external payable {
         ParkingSession storage session = sessions[msg.sender];
-        require(session.isActive, "No active parking session");
+        require(session.isActive, "No active session");
+        require(!session.isEnded, "Session already ended");
 
+        uint256 parkedMinutes = (block.timestamp - session.startTime) / 60;
+        uint256 penalty = 0;
+
+        if (parkedMinutes > session.allowedMinutes) {
+            uint256 overtime = parkedMinutes - session.allowedMinutes;
+            penalty = overtime * penaltyPerMinute;
+            require(msg.value >= penalty, "Insufficient penalty payment");
+        } else {
+            require(msg.value == 0, "No penalty required");
+        }
+
+        session.isEnded = true;
         session.isActive = false;
-        uint256 endTime = block.timestamp;
 
-        // Calculate parked time in minutes
-        uint256 parkedTime = (endTime - session.startTime) / 60; 
+        emit ParkingEnded(msg.sender, parkedMinutes, penalty);
 
-        // Calculate overtime
-        uint256 overtime = 0;
-        if (parkedTime > allowedMinutes) {
-            overtime = parkedTime - allowedMinutes;
-        }
-
-        uint256 penalty = overtime * penaltyPerMinute;
-        uint256 totalAmount = baseFee + penalty;
-
-        require(msg.value >= totalAmount, "Insufficient payment");
-
-        emit PaymentReceived(msg.sender, msg.value);
-
-        if (overtime > 0) {
-            emit PenaltyCalculated(msg.sender, overtime, penalty);
-        }
-
-        // Refund extra amount if user sent more
-        if (msg.value > totalAmount) {
-            payable(msg.sender).transfer(msg.value - totalAmount);
+        // Refund extra if user paid more than needed
+        if (msg.value > penalty) {
+            payable(msg.sender).transfer(msg.value - penalty);
         }
     }
 
-    // Withdraw all funds by owner
+    function getSession(address user) external view returns (ParkingSession memory) {
+        return sessions[user];
+    }
+
+    function setPenaltyPerMinute(uint256 newPenalty) external {
+        require(msg.sender == owner, "Only owner");
+        penaltyPerMinute = newPenalty;
+    }
+
     function withdraw() external {
-        require(msg.sender == owner, "Only owner can withdraw");
+        require(msg.sender == owner, "Only owner");
         payable(owner).transfer(address(this).balance);
     }
 
-    // Get contract balance
     function getBalance() external view returns (uint256) {
         return address(this).balance;
-    }
-
-    // Set penalty per minute
-    function setPenaltyPerMinute(uint256 newPenalty) external {
-        require(msg.sender == owner, "Only owner can set");
-        penaltyPerMinute = newPenalty;
     }
 }

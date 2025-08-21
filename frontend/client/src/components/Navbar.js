@@ -77,6 +77,9 @@ function Navbar() {
           <li className="nav-item">
             <Link className="nav-link nav-anim" to="/user-dashboard">User Dashboard</Link>
           </li>
+           <li className="nav-item">
+            <Link className="nav-link nav-anim" to="/checkout">Payment</Link>
+          </li>
 
           {/* First letter of user's email */}
           {user && (
@@ -104,6 +107,15 @@ function Navbar() {
             <Link className="nav-link nav-anim" to="/user-management">User Management</Link>
           </li>
           <li className="nav-item">
+            <Link className="nav-link nav-anim" to="/admin-scanner">scanner</Link>
+          </li>
+          <li className="nav-item">
+            <Link className="nav-link nav-anim" to="/exit-scanner">Exit Scanner</Link>
+          </li>
+          <li className="nav-item">
+            <Link className="nav-link nav-anim" to="/payment-dashboard">Payment Dashboard</Link>  
+          </li>
+           <li className="nav-item">
             <button className="btn btn-outline-light logout-btn" onClick={handleLogout}>Logout</button>
           </li>
         </>

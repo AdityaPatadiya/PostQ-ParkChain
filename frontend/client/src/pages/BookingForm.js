@@ -1,20 +1,22 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { collection, addDoc, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { db, auth } from "../firebase";
-import emailjs from "@emailjs/browser";
-import "../css/BookingForm.css"; // Custom CSS
+import "../css/BookingForm.css";
+import { calcTotalPriceINR, getPricePerHour } from "../utils/price";
+import { useNavigate } from "react-router-dom";
 
 const BookingForm = ({ plot, onClose }) => {
   const [form, setForm] = useState({
     slotType: "compact",
-    reservedFor: "general",
+    reservedFor: "general", // "ev"|"general"|"vip"|"handicap" (vip/handicap fall back to general pricing)
     date: "",
     time: "",
     duration: "",
+    vehicleNumber: "",
   });
-
   const [userData, setUserData] = useState({ email: "", name: "" });
   const formRef = useRef();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -24,10 +26,9 @@ const BookingForm = ({ plot, onClose }) => {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
-          setUserData({
-            email: user.email,
-            name: data.name || "",
-          });
+          setUserData({ email: user.email, name: data.name || "" });
+        } else {
+          setUserData({ email: user.email, name: "" });
         }
       }
     };
@@ -49,12 +50,20 @@ const BookingForm = ({ plot, onClose }) => {
     return Math.max(s1, s2) < Math.min(e1, e2);
   };
 
-  const handleSubmit = async (e) => {
+  const pricePerHour = useMemo(() => getPricePerHour(plot, form.slotType, form.reservedFor), [plot, form.slotType, form.reservedFor]);
+  const totalINR = useMemo(() => calcTotalPriceINR(plot, form.slotType, form.reservedFor, form.duration), [plot, form.slotType, form.reservedFor, form.duration]);
+
+  const handleProceed = async (e) => {
     e.preventDefault();
-    const { slotType, reservedFor, date, time, duration } = form;
+    const { slotType, reservedFor, date, time, duration, vehicleNumber } = form;
     const user = auth.currentUser;
     if (!user) return alert("You must be logged in.");
 
+    if (!vehicleNumber.trim()) return alert("Vehicle number is required.");
+    if (!date || !time || !duration) return alert("Please fill all date/time fields.");
+    if (Number(duration) <= 0) return alert("Duration must be greater than 0.");
+
+    // Check overlap on same plot/slotType/reservedFor/date
     const snapshot = await getDocs(
       query(
         collection(db, "bookings"),
@@ -65,54 +74,45 @@ const BookingForm = ({ plot, onClose }) => {
       )
     );
 
-    for (const doc of snapshot.docs) {
-      const data = doc.data();
+    for (const docSnap of snapshot.docs) {
+      const data = docSnap.data();
       if (isOverlap(data.time, time, Number(data.duration), Number(duration))) {
         return alert("Slot already booked at that time.");
       }
     }
 
-    await addDoc(collection(db, "bookings"), {
+    // Do NOT create QR or send email here. Push to Checkout page first.
+    // Optionally create a temporary 'pending' booking in Firestore (without QR)
+    const pendingPayload = {
       ...form,
       userId: user.uid,
       userEmail: user.email,
+      userName: userData.name,
       plotId: plot.id,
       plotName: plot.plotName,
       location: plot.location,
-      createdAt: new Date(),
-    });
+      pricePerHour,
+      totalPriceINR: totalINR,
+      status: "pending", // pending -> paid -> emailed
+      createdAt: new Date().toISOString(),
+    };
 
-    try {
-      await emailjs.send(
-        "service_lzcft4a",
-        "template_6b0423i",
-        {
-          name: userData.name,
-          email: userData.email,
-          slot: slotType,
-          reservedFor,
-          date,
-          time,
-          duration,
-          plotName: plot.plotName,
-        },
-        "FeYm9Nn9Men4Ayj-C"
-      );
-      alert("Booking successful and confirmation email sent!");
-    } catch (err) {
-      console.error("EmailJS Error:", err);
-      alert("Booking saved, but email failed to send.");
-    }
+    // You can store this now or pass via route state only. We'll pass in state and let Checkout write to DB to avoid abandoned docs.
 
-    onClose();
+    navigate("/checkout", { state: { plot, form: pendingPayload } });
   };
 
   return (
     <div className="booking-overlay">
       <div className="booking-modal">
-        <h4 className="modal-title">Book at {plot.plotName}</h4>
-        <p className="modal-sub"><strong>Email:</strong> {userData.email || "Not found"}</p>
-        <form ref={formRef} onSubmit={handleSubmit} className="booking-form">
+        <h4>Book at {plot.plotName}</h4>
+        <p><strong>Email:</strong> {userData.email || "Not found"}</p>
+        <p><strong>Location:</strong> {plot.location?.lat}, {plot.location?.lng}</p>
+
+        <form ref={formRef} onSubmit={handleProceed}>
+          <label>Vehicle Number</label>
+          <input type="text" name="vehicleNumber" onChange={handleChange} required />
+
           <label>Slot Type</label>
           <select name="slotType" onChange={handleChange} value={form.slotType}>
             <option value="compact">Compact</option>
@@ -137,9 +137,15 @@ const BookingForm = ({ plot, onClose }) => {
           <label>Duration (hr)</label>
           <input type="number" name="duration" min="1" onChange={handleChange} required />
 
-          <div className="modal-actions">
-            <button type="submit" className="btn btn-success">Book</button>
-            <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
+          {/* Live pricing summary */}
+          <div className="price-summary">
+            <div>Price / hour: ₹{pricePerHour}</div>
+            <div>Total (₹): <strong>{isNaN(totalINR) ? 0 : totalINR}</strong></div>
+          </div>
+
+          <div className="actions">
+            <button type="submit">Review & Pay</button>
+            <button type="button" onClick={onClose}>Cancel</button>
           </div>
         </form>
       </div>

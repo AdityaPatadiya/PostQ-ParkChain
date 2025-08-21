@@ -2,13 +2,13 @@ const { ethers } = require("hardhat");
 
 async function main() {
   const [deployer] = await ethers.getSigners();
-  console.log("Deploying with:", deployer.address);
+  console.log("Deploying with account:", deployer.address);
 
-  const PaymentContract = await ethers.getContractFactory("PaymentContract");
-  const contract = await PaymentContract.deploy();
+  const ParkingContract = await ethers.getContractFactory("ParkingContract");
+  const contract = await ParkingContract.deploy();
   await contract.waitForDeployment();
 
-  console.log("Contract deployed at:", await contract.getAddress());
+  console.log("ParkingContract deployed at:", await contract.getAddress());
 }
 
 main().catch((error) => {
