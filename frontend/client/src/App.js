@@ -15,6 +15,7 @@ import AdminScanner from "./pages/AdminScanner";
 import ExitScanner from './pages/ExitScanner';
 import PaymentDashboard from './pages/PaymentDashboard';
 import Checkout from './pages/Checkout';
+import MyBookings from './pages/my-bookings';
  // Assuming you have a Home component
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
         <Route path="/exit-scanner" element={<ExitScanner />} />
         <Route path="/payment-dashboard" element={<PaymentDashboard />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/my-bookings" element={<MyBookings />} />
         {/* Add more routes as needed */}
       </Routes>
     </Router>

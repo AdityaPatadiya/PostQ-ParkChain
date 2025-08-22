@@ -15,7 +15,7 @@ function LandingPage() {
                         Experience the future of parking with real-time availability,
                         easy booking, and secure payments — all in one platform.
                     </p>
-                    <button className="cta-btn">Get Started</button>
+                    {/* <button className="cta-btn">Get Started</button> */}
                 </div>
             </section>
 

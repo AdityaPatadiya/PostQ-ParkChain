@@ -77,10 +77,6 @@ function Navbar() {
           <li className="nav-item">
             <Link className="nav-link nav-anim" to="/user-dashboard">User Dashboard</Link>
           </li>
-           <li className="nav-item">
-            <Link className="nav-link nav-anim" to="/checkout">Payment</Link>
-          </li>
-
           {/* First letter of user's email */}
           {user && (
             <li className="nav-item d-flex align-items-center mx-2">

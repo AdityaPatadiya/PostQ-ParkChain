@@ -2,54 +2,83 @@
   font-family: 'Segoe UI', sans-serif;
 }
 
-/* Hero Section Split Screen */
+/* Hero Section Fullscreen */
 .hero {
   display: flex;
+  flex-direction: column; /* Stack elements vertically */
   justify-content: center;
   align-items: center;
-  height: 90vh; background:
-    url('https://d1krbhyfejrtpz.cloudfront.net/blog/wp-content/uploads/2021/12/07140942/IoT-Based-Smart-Parking-System-A-Complete-Development-Guide.jpg') 
+  height: 90vh;
+  width: 100%;
+  background: url('https://content.cogniteq.com/s3fs-public/2023-11/1600x800%203.png') 
     center/cover no-repeat;
- 
+  position: relative;
+  color: white;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Dark overlay for better text readability */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45); /* Dark overlay */
+  z-index: 1;
 }
 
 .hero-content {
-
-  padding: 2rem;
-  border-radius: 10px;
-  text-align: center;
-  max-width: 500px;
+  position: relative;
+  z-index: 2; /* Keep text above overlay */
+  max-width: 600px;
 }
 
 .hero-content h1 {
-  font-size: 2.5rem;
+  font-size: 3rem;
   font-weight: bold;
   margin-bottom: 1rem;
-  color:#f9f9f9;
 }
 
 .hero-content p {
-  font-size: 1rem;
+  font-size: 1.2rem;
   margin-bottom: 2rem;
-  color: white;
 }
 
+/* Call to Action Button */
 .cta-btn {
-  padding: 12px 20px;
+  padding: 14px 28px;
   background: #00bfa5;
   border: none;
   border-radius: 6px;
   color: white;
   font-weight: bold;
+  font-size: 1rem;
   cursor: pointer;
-  transition: 0.3s;
+  transition: background 0.3s ease;
 }
 
 .cta-btn:hover {
   background: #009e8e;
 }
 
-/* Features Section */
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 2.2rem;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
+  }
+
+  .cta-btn {
+    padding: 12px 20px;
+    font-size: 0.95rem;
+  }
+}
 .features {
   padding: 3rem 2rem;
   background: #f9f9f9;
@@ -59,19 +88,56 @@
 .features h2 {
   margin-bottom: 2rem;
   color: #00bfa5;
+  font-size: 2rem;
 }
 
 .feature-list {
   display: flex;
-  gap: 2rem;
   justify-content: center;
+  gap: 2rem;
   flex-wrap: wrap;
 }
 
 .feature {
   background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
+  padding: 2rem 1.5rem;
+  border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   width: 250px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+}
+
+.feature i {
+  font-size: 2.5rem;
+  color: #00bfa5;
+  margin-bottom: 1rem;
+}
+
+.feature h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.feature p {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .feature-list {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .feature {
+    width: 90%;
+  }
 }
