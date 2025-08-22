@@ -91,6 +91,17 @@ export default function Checkout() {
                     EmailConfig.publicKey
                 );
 
+                await fetch("http://127.0.0.1:5000/transactions/complete", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        sender: summary.userName,
+                        recipient: "SmartParkingSystem",
+                        amount: ethAmount,
+                        bookingId: pendingRef.id
+                    })
+                });
+
                 console.log("EmailJS Success:", result.text);
             } catch (mailErr) {
                 console.error("EmailJS Error:", mailErr);

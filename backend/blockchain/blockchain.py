@@ -15,7 +15,7 @@ class Blockchain(object):
         self.cryptography = Cryptography()
 
         # Create the genesis block
-        self.new_block(previous_hash='0000000000000000000000000000000000000000000000000000000000000000', proof=self.proof_of_work(0))
+        self.new_block(previous_hash='0'*64, proof=100)
 
     def new_block(self, proof, previous_hash=None):
         """
@@ -24,38 +24,42 @@ class Blockchain(object):
         :param previous_hash: (optional) <str> Hash of previous Block
         :return: <dict> New Block
         """
+        # Get the previous hash from the last block if not provided
+        if previous_hash is None:
+            previous_hash = self.hash(self.last_block)
+
         block = {
             'index': len(self.chain) + 1,
             'timestamp': time(),
             'transactions': self.current_transaction,
             'proof': proof,
-            'previous_hash': previous_hash or self.hash(self.chain[-1]),
-            # 'validator': ""
+            'previous_hash': previous_hash
         }
+
+        # Compute current block hash
+        current_hash = self.hash(block)
+        block['current_hash'] = current_hash
 
         # Reset the current list of transactions
         self.current_transaction = []
+        
+        # Add the block to the chain
         self.chain.append(block)
         return block
 
-    def new_transaction(self, sender, recipient, amount):
+    def new_transaction(self, sender, recipient, amount, booking_id=None):
         """
-        Creates a new transaction to go into the nexr mined Block
+        Creates a new transaction to go into the next mined Block
         :param sender: <str> Address of the Sender
         :param recipient: <str> Address of the Recipient
         :param amount: <int> Amount
-        :return: <int> The index of the Block taht will hold this transaction
+        :return: <int> The index of the Block that will hold this transaction
         """
         transaction = {
             'sender': sender,
             'recipient': recipient,
             'amount': amount,
-            # "vehical_id": "",
-            # "duration": "",
-            # "location": "",
-            # "timestamp": "",
-            # "signature": "",
-            # "public_key": "",
+            'booking_id': booking_id
         }
 
         signature = self.cryptography.sign_transaction(transaction)
@@ -86,24 +90,22 @@ class Blockchain(object):
 
     def valid_chain(self, chain):
         """
-        Determine if a given blockchain is calid
+        Determine if a given blockchain is valid
         :param chain: <list> A blockchain
-        :return: <bool> Ture if valid, False if not
+        :return: <bool> True if valid, False if not
         """
         last_block = chain[0]
         current_index = 1
 
         while current_index < len(chain):
             block = chain[current_index]
-            print(f"{last_block}")
-            print(f"{block}")
-            print("\n-----------------\n")
+            
             # Check that the hash of the block is correct
             if block['previous_hash'] != self.hash(last_block):
                 return False
 
             # Check that the proof of work is correct
-            if not self.Valid_proof(last_block['proof'], block['proof']):
+            if not self.valid_proof(last_block['proof'], block['proof']):
                 return False
 
             last_block = block
@@ -115,7 +117,7 @@ class Blockchain(object):
         """
         This is our Consensus Algorithm, it resolves conflicts 
         by replacing our chain with the longest one in the network.
-        :return: <bool> True if our chain was replaced, Flase if not
+        :return: <bool> True if our chain was replaced, False if not
         """
         neighbours = self.nodes
         new_chain = None
@@ -123,7 +125,7 @@ class Blockchain(object):
         # We're only looking for chains longer than ours
         max_length = len(self.chain)
 
-        # Grab and verify the chains from all the nodes in out network
+        # Grab and verify the chains from all the nodes in our network
         for node in neighbours:
             response = requests.get(f"http://{node}/chain")
 
@@ -131,12 +133,12 @@ class Blockchain(object):
                 length = response.json()['length']
                 chain = response.json()['chain']
 
-                # Check if the length islonger and the chain is valid
+                # Check if the length is longer and the chain is valid
                 if length > max_length and self.valid_chain(chain):
                     max_length = length
                     new_chain = chain
 
-        # Replace our chain if we deiscovered a new, valid chain longer than ours
+        # Replace our chain if we discovered a new, valid chain longer than ours
         if new_chain:
             self.chain = new_chain
             return True
@@ -150,8 +152,10 @@ class Blockchain(object):
         :param block: <dict> Block
         :return: <str>
         """
-
-        block_string = json.dumps(block, sort_keys=True).encode()
+        # We must make sure that the Dictionary is Ordered, or we'll have inconsistent hashes
+        block_copy = block.copy()
+        block_copy.pop('current_hash', None)  # remove current_hash before hashing
+        block_string = json.dumps(block_copy, sort_keys=True).encode()
         return hashlib.sha256(block_string).hexdigest()
 
     @property
@@ -167,20 +171,19 @@ class Blockchain(object):
         :return: <int>
         """
         proof = 0
-        while self.Valid_proof(last_proof, proof) is False:
-            proof +=1
+        while self.valid_proof(last_proof, proof) is False:
+            proof += 1
 
         return proof
 
     @staticmethod
-    def Valid_proof(last_proof, proof):
+    def valid_proof(last_proof, proof):
         """
-        Validated the Proof: Does hash(last_proof, proof) contains 4 leading zeroes?
+        Validates the Proof: Does hash(last_proof, proof) contains 4 leading zeroes?
         :param last_proof: <int> Previous Proof
         :param proof: <int> Current Proof
         :return: <bool> True if correct, False if not.
         """
-
         guess = f"{last_proof}{proof}".encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash[:4] == "0000"

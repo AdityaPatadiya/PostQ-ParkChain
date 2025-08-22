@@ -1,9 +1,11 @@
 from uuid import uuid4
 from flask import Flask, jsonify, request
 from blockchain import Blockchain
+from flask_cors import CORS
 
 
 app = Flask(__name__)
+CORS(app)
 
 # Generate a globally unique address for this node
 node_identifier = str(uuid4()).replace('-', '')
@@ -44,14 +46,39 @@ def mine():
 def new_transaction():
     values = request.get_json()
 
-    # Check that the required fields are in the POST'ed data
     required = ['sender', 'recipient', 'amount']
     if not all(k in values for k in required):
         return 'Missing Values', 400
 
-    # Create a new Transaction
+    index = blockchain.new_transaction(
+        values['sender'],
+        values['recipient'],
+        values['amount'],
+        values.get('booking_id')
+    )
+    return jsonify({'message': f"Transaction will be added to Block {index}"}), 201
+
+@app.route('/transactions/complete', methods=['POST'])
+def complete_payment():
+    values = request.get_json()
+
+    required = ['sender', 'recipient', 'amount', 'bookingId']
+    if not all(k in values for k in required):
+        return 'Missing values', 400
+
+    # 1. Add transaction
     index = blockchain.new_transaction(values['sender'], values['recipient'], values['amount'])
-    response = {'message': f"transaction will be added to Block {index}"}
+
+    # 2. Mine a new block
+    last_block = blockchain.last_block
+    proof = blockchain.proof_of_work(last_block['proof'])
+    previous_hash = blockchain.hash(last_block)
+    block = blockchain.new_block(proof, previous_hash)
+
+    response = {
+        'message': 'Payment recorded and block mined',
+        'block': block
+    }
     return jsonify(response), 201
 
 @app.route('/chain', methods=['GET'])
