@@ -131,8 +131,8 @@ const ExitScanner = () => {
 
       // 5️⃣ Send bill via EmailJS
       await emailjs.send(
-        "service_lzcft4a",
-        "template_v0am8ji",
+        "service_5z7ml5q",
+        "template_khyw9tp",
         {
           to_email: completedBookingData.email,
           total_cost: completedBookingData.totalCost,
@@ -140,7 +140,7 @@ const ExitScanner = () => {
           end_time: completedBookingData.endTime,
           overtime_hours: completedBookingData.overtimeHours,
         },
-        "FeYm9Nn9Men4Ayj-C"
+        "fTnZhHGqEBmUEx75Q"
       );
 
       alert("Bill sent and full booking info stored in completedBookings.");

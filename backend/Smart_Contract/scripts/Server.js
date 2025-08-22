@@ -25,8 +25,13 @@ app.post("/api/start-parking", async (req, res) => {
       return res.status(400).json({ success: false, error: "Missing required parameters: baseFee and allowedMinutes." });
     }
 
+    // Get the current nonce for the wallet
+    const nonce = await wallet.getNonce();
+
+    // Send the transaction with the fetched nonce
     const tx = await contract.startParking(allowedMinutes, {
       value: ethers.parseEther(baseFee.toString()),
+      nonce: nonce, // Manually set the nonce
     });
     await tx.wait();
 
@@ -42,8 +47,13 @@ app.post("/api/end-parking", async (req, res) => {
   try {
     const { penaltyFee } = req.body;
 
+    // Get the current nonce for the wallet
+    const nonce = await wallet.getNonce();
+
+    // Send the transaction with the fetched nonce
     const tx = await contract.endParking({
       value: ethers.parseEther(penaltyFee.toString() || "0"),
+      nonce: nonce, // Manually set the nonce
     });
     await tx.wait();
 
