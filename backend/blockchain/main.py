@@ -66,10 +66,15 @@ def complete_payment():
     if not all(k in values for k in required):
         return 'Missing values', 400
 
-    # 1. Add transaction
-    index = blockchain.new_transaction(values['sender'], values['recipient'], values['amount'])
+    # ✅ Add transaction with bookingId
+    index = blockchain.new_transaction(
+        values['sender'],
+        values['recipient'],
+        values['amount'],
+        values['bookingId']
+    )
 
-    # 2. Mine a new block
+    # ✅ Mine a new block
     last_block = blockchain.last_block
     proof = blockchain.proof_of_work(last_block['proof'])
     previous_hash = blockchain.hash(last_block)

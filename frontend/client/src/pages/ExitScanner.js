@@ -454,12 +454,12 @@ const ExitScanner = () => {
             {loading ? "Processing..." : "End Parking & Pay Bill"}
           </button>
 
-          <button
+          {/* <button
             className="mt-3 ml-2 bg-green-500 text-white px-4 py-2 rounded"
             onClick={handleOpenGate}
           >
             Open Exit Gate
-          </button>
+          </button> */}
         </div>
       )}
     </div>
